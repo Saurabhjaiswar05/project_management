@@ -1,6 +1,6 @@
 # Project Management API
 
-A backend REST API built using Node.js, Express.js, MySQL, Sequelize, MongoDB and Mongoose. It provides user authentication, project management, task management, and dashboard statistics.
+A backend REST API built using Node.js, Express.js, MySQL, Sequelize, MongoDB and Mongoose. It provides user authentication, project management, task management, dashboard statistics, and request logging.
 
 ## Features
 
@@ -14,6 +14,10 @@ A backend REST API built using Node.js, Express.js, MySQL, Sequelize, MongoDB an
 - Pagination for task listing
 - Dashboard statistics combining MySQL and MongoDB data
 - Centralized error handling
+- Custom request logging using Node.js File System (`fs`)
+- Login rate limiting to prevent excessive login attempts
+- HTTP security headers using Helmet
+- CORS configuration for frontend communication
 
 ## Tech Stack
 
@@ -28,6 +32,7 @@ A backend REST API built using Node.js, Express.js, MySQL, Sequelize, MongoDB an
 - Helmet
 - CORS
 - express-rate-limit
+- Node.js File System (`fs`)
 
 ## Project Structure
 
@@ -45,7 +50,9 @@ project-management-api/
 │   └── dashboardController.js
 │
 ├── middlewares/
-│   └── authMiddleware.js
+│   ├── authMiddleware.js
+│   ├── logger.js
+│   └── rateLimiter.js
 │
 ├── models/
 │   ├── mysql/
@@ -62,6 +69,7 @@ project-management-api/
 │   ├── taskRoutes.js
 │   └── dashboardRoutes.js
 │
+├── console.log
 ├── .env.example
 ├── .gitignore
 ├── index.js
@@ -149,6 +157,47 @@ Refer to `.env.example` for the required variables:
 - JWT_EXPIRES_IN
 
 Never commit your actual `.env` file.
+
+## Middleware
+
+### 1. Authentication Middleware
+
+`authMiddleware.js`
+
+- Verifies JWT tokens.
+- Protects private API routes.
+- Identifies the authenticated user.
+- Prevents unauthorized access.
+
+### 2. Request Logger Middleware
+
+`logger.js`
+
+Uses Node.js File System (`fs`) to append incoming request information to a file named `console.log`.
+
+Logged information includes:
+
+- Request body
+- HTTP method
+- Request path
+- Query parameters
+- Route parameters
+
+The log file is generated when requests are processed.
+
+### 3. Login Rate Limiter
+
+`rateLimiter.js`
+
+Uses `express-rate-limit` to protect the login endpoint.
+
+Configuration:
+
+- Time window: 15 minutes
+- Maximum requests: 10 per IP within the window
+- Further attempts receive a rate-limit error message.
+
+The rate limiter is applied specifically to the login route.
 
 ## API Documentation
 
@@ -255,8 +304,11 @@ Task filtering and pagination:
 GET /api/tasks?status=todo
 GET /api/tasks?priority=high
 GET /api/tasks?projectId=1
+GET /api/tasks?status=todo&priority=high&projectId=1
 GET /api/tasks?page=1&limit=10
 ```
+
+Multiple filters can be combined in a single request.
 
 ### 4. Dashboard API
 
@@ -270,9 +322,14 @@ Returns project counts and task counts grouped by status and priority.
 
 - Passwords are hashed using bcrypt.
 - JWT authentication protects private endpoints.
+- Login rate limiting prevents excessive login attempts.
+- Helmet adds HTTP security headers.
+- CORS controls cross-origin frontend access.
 - Users can access only their own projects and tasks.
 - Environment credentials are stored outside source code.
 
 ## License
 
 This project was developed as a backend API assessment.
+
+Note: The services/ folder is currently unused; business logic is handled directly in the controllers.
