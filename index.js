@@ -12,11 +12,11 @@ const helmet = require("helmet");
 const cors = require("cors");
 const logger = require("./middlewares/logger");
 
-
 const app = express();
 
 
 app.use(helmet());
+
 // CORS configuration
 app.use(cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -33,11 +33,11 @@ app.get('/',(req,res)=>{
     message : 'server is running'
   });
 });
+
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-
 
 app.use((err, req, res, next) => {
     return res.status(err.statusCode || err.status || 500).json({
