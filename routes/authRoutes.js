@@ -1,6 +1,6 @@
 
 const express = require("express");
-
+const loginLimiter = require("../middlewares/rateLimiter");
 const router = express.Router();
 
 const {
@@ -10,7 +10,6 @@ const {
     updateProfile
 } = require("../controllers/authController");
 const authMiddleware = require("../middlewares/authMiddleware");
-const loginLimiter = require("../middlewares/loginLimiter");
 
 
 // Public routes
