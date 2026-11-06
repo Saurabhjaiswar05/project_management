@@ -331,3 +331,5 @@ Returns project counts and task counts grouped by status and priority.
 ## License
 
 This project was developed as a backend API assessment.
+
+Note: The services/ folder is currently unused; business logic is handled directly in the controllers.
