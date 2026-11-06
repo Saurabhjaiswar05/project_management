@@ -8,12 +8,31 @@ const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const helmet = require("helmet");
+const cors = require("cors");
+const logger = require("./middlewares/logger");
 
 
 const app = express();
 
-app.use(express.json());
 
+app.use(helmet());
+// CORS configuration
+app.use(cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+app.use(express.json());
+app.use(logger);
+
+app.get('/',(req,res)=>{
+  return res.status(200).json({
+    success : true,
+    message : 'server is running'
+  });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);

@@ -10,11 +10,12 @@ const {
     updateProfile
 } = require("../controllers/authController");
 const authMiddleware = require("../middlewares/authMiddleware");
+const loginLimiter = require("../middlewares/loginLimiter");
 
 
 // Public routes
 router.post("/register", register);
-router.post("/login", login);
+router.post("/login", loginLimiter,login);
 
 // Protected routes
 router.get("/me", authMiddleware, getMe);

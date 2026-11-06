@@ -1,5 +1,6 @@
 const Task = require("../models/mongodb/Task");
 const { Project } = require("../models/mysql/associations");
+const mongoose = require("mongoose");
 
 // CREATE TASK
 const createTask = async (req, res, next) => {
@@ -72,6 +73,8 @@ const getTasks = async (req, res, next) => {
             limit = 10
         } = req.query;
 
+        
+
         const filter = {
             userId: Number(req.user.id)
         };
@@ -116,6 +119,11 @@ const getTaskById = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+    const error = new Error("Invalid task ID");
+    error.statusCode = 400;
+    throw error;
+}
         const task = await Task.findOne({
             _id: id,
             userId: Number(req.user.id)
@@ -143,6 +151,12 @@ const updateTask = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { title, description, status, priority } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+    const error = new Error("Invalid task ID");
+    error.statusCode = 400;
+    throw error;
+}
 
         const task = await Task.findOne({
             _id: id,
@@ -212,7 +226,11 @@ const updateTask = async (req, res, next) => {
 const deleteTask = async (req, res, next) => {
     try {
         const { id } = req.params;
-
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+    const error = new Error("Invalid task ID");
+    error.statusCode = 400;
+    throw error;
+}
         const task = await Task.findOne({
             _id: id,
             userId: Number(req.user.id)
